@@ -1,22 +1,45 @@
 ﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: engagementsapi-deployment
-    annotations:
-        kubernetes.io/change-cause: "Initial deployment of the app"
+  name: engagementsapi
 spec:
-    replicas: 5
-    selector:
-        matchLabels:
-            app: engagementsapi
-    template:
-        metadata:
-            name: engagementsapik8s
-            labels:
-                env: prod
-                app: engagementsapi
-                app.kubernetes.io/name: engagementsapi
-        spec:
-            containers:
-                -name: engagementsapi
-                    image:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: engagementsapi
+  template:
+    metadata:
+      labels:
+        app: engagementsapi
+        env: prod
+        app.kubernetes.io/name: engagementsapi
+    spec:
+      containers:
+        - name: engagementsapi
+          image: onurinc/engagementsapi
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 80
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-lb-service
+spec:
+  selector:
+    app.kubernetes.io/name: engagementsapi
+  ports:
+    - name: engagementsapi-port
+      protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: LoadBalancer
