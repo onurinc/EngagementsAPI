@@ -1,0 +1,22 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: engagementsapi-deployment
+    annotations:
+        kubernetes.io/change-cause: "Initial deployment of the app"
+spec:
+    replicas: 5
+    selector:
+        matchLabels:
+            app: engagementsapi
+    template:
+        metadata:
+            name: engagementsapik8s
+            labels:
+                env: prod
+                app: engagementsapi
+                app.kubernetes.io/name: engagementsapi
+        spec:
+            containers:
+                -name: engagementsapi
+                    image:
