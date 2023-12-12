@@ -1,0 +1,57 @@
+name: EngagementsAPI workflow
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore EngagementsAPI/EngagementsAPI.csproj
+    - name: Build
+      run: dotnet build EngagementsAPI/EngagementsAPI.csproj --no-restore
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore EngagementsAPI/EngagementsAPI.csproj
+    - name: Build
+      run: dotnet build EngagementsAPI/EngagementsAPI.csproj --no-restore
+    - name: Test
+      run: dotnet test EngagementsAPI/EngagementsAPI.csproj --no-build --verbosity normal
+
+  docker_build_push:
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Docker Build & Push Action
+      uses: mr-smithers-excellent/docker-build-push@v6.2
+      with:
+        image: onurinc/engagementsapi
+        tags: v1, latest
+        registry: docker.io
+        dockerfile: EngagementsAPI/Dockerfile
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+
