@@ -1,0 +1,32 @@
+version: '3.4'
+
+networks:
+  backend:
+
+services:
+  engagementsapi:
+    container_name: engagements-api
+    image: ${DOCKER_REGISTRY-}engagementsapi
+    ports: 
+      - "18001:80"
+    build:
+      context: .
+      dockerfile: EngagementsAPI/Dockerfile
+    environment:
+      - DB_HOST=engagementsdb
+      - DB_NAME=engagements
+      - DB_SA_PASSWORD=password1!
+    networks:
+      - backend
+
+  engagementsdb:
+    container_name: engagements-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=password1!
+    ports:
+      - '18006:1433'
+    restart: always
+    networks:
+      - backend
