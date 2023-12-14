@@ -21,12 +21,11 @@ services:
 
   engagementsdb:
     container_name: engagements-db
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mysql:8.0.29-oracle
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=password1!
+      - MYSQL_ROOT_PASSWORD=password1!
     ports:
-      - '18006:1433'
+      - '8006:3306'
     restart: always
     networks:
       - backend
