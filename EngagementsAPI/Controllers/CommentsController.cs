@@ -24,7 +24,7 @@ namespace EngagementsAPI.Controllers
             return Ok(await _context.Comments.ToListAsync());
         }
 
-        [HttpGet("GetById")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Comment>> GetById(int id)
         {
             var comment = await _context.Comments.FindAsync(id);

@@ -1,0 +1,23 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.4"
+services:
+  engagementsapi:
+    build:
+      context: "C:\\Code Projects\\EngagementsAPI"
+      dockerfile: "EngagementsAPI/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net6.0/EngagementsAPI.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      NUGET_PACKAGES: "C:\\Users\\OnurI\\.nuget\\packages"
+      NUGET_FALLBACK_PACKAGES: "C:\\Users\\OnurI\\.nuget\\packages"
+    image: "engagementsapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\OnurI\\.nuget\\packages:/root/.nuget/fallbackpackages"
+    - "C:\\Code Projects\\EngagementsAPI\\EngagementsAPI:/app:rw"
+    - "C:\\Code Projects\\EngagementsAPI:/src:rw"
+    working_dir: "/app"
