@@ -8,7 +8,7 @@ services:
     container_name: engagements-api
     image: ${DOCKER_REGISTRY-}engagementsapi
     ports: 
-      - "8001:80"
+      - "18004:80"
     build:
       context: .
       dockerfile: EngagementsAPI/Dockerfile
@@ -27,7 +27,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=password1!
     ports:
-      - '18006:1433'
+      - '18009:1433'
     restart: always
     networks:
       - backend
