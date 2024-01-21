@@ -3,35 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using System.Text;
+using EngagementsAPI.Controllers;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using EngagementsAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var factory = new ConnectionFactory()
-{
-    HostName = "localhost",
-    UserName = "user",
-    Password = "mypass",
-    VirtualHost = "/"
-};
-
-var conn = factory.CreateConnection();
-
-using var channel = conn.CreateModel();
-
-channel.QueueDeclare("delete_user", durable: true, exclusive: false);
-
-var consumer = new EventingBasicConsumer(channel);
-
-consumer.Received += (model, eventArgs) =>
-{
-    var body = eventArgs.Body.ToArray();
-
-    var message = Encoding.UTF8.GetString(body);
-
-    Console.WriteLine(message);
-};
-
-channel.BasicConsume("delete_user", true, consumer);
 
 
 // Add services to the container.
@@ -40,7 +18,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 //var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 //var dbName = Environment.GetEnvironmentVariable("DB_NAME");
@@ -55,7 +32,9 @@ builder.Services.AddSwaggerGen();
 //    options.UseSqlServer(connectionString));
 
 //InMemoryDb for testing
-builder.Services.AddDbContext<ApiDbContext>(options => options.UseInMemoryDatabase("EngementsDb"));
+builder.Services.AddDbContext<ApiDbContext>(options => options.UseInMemoryDatabase("EngagementsDb"), optionsLifetime: ServiceLifetime.Singleton);
+builder.Services.AddDbContextFactory<ApiDbContext>(options => options.UseInMemoryDatabase("EngagementsDb"));
+builder.Services.AddHostedService<MessageConsumer>();
 
 var app = builder.Build();
 
@@ -71,8 +50,9 @@ app.UseSwaggerUI();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers();   
 
+// Create app service scope, so that we can access the DI
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -83,6 +63,8 @@ using (var scope = app.Services.CreateScope())
     {
         context.Database.Migrate();
     }
+
 }
+
 
 app.Run();
